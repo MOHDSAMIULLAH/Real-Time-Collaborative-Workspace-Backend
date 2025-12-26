@@ -6,7 +6,6 @@ describe('Project Integration Tests', () => {
   let app: App;
   let server: any;
   let accessToken: string;
-  let userId: string;
   let projectId: string;
 
   beforeAll(async () => {
@@ -25,7 +24,6 @@ describe('Project Integration Tests', () => {
       });
 
     accessToken = response.body.tokens.accessToken;
-    userId = response.body.user.id;
   });
 
   afterAll(async () => {
@@ -125,18 +123,14 @@ describe('Project Integration Tests', () => {
   });
 
   describe('Project Members', () => {
-    let secondUserToken: string;
-
     beforeAll(async () => {
-      const response = await request(server)
+      await request(server)
         .post('/api/v1/auth/register')
         .send({
           email: 'test-member@example.com',
           password: 'TestPassword123!',
           name: 'Member Test User',
         });
-
-      secondUserToken = response.body.tokens.accessToken;
     });
 
     it('should invite a member', async () => {

@@ -214,7 +214,7 @@ export class JobQueue {
 
     const { code, language } = payload;
 
-    logger.info('Executing code', { language });
+    logger.info('Executing code', { language, codeLength: code?.length });
 
     // Mock execution result
     return {
@@ -261,7 +261,7 @@ export class JobQueue {
 
     const { recipient, message } = payload;
 
-    logger.info('Sending notification', { recipient });
+    logger.info('Sending notification', { recipient, messagePreview: message?.substring(0, 50) });
 
     return {
       success: true,
