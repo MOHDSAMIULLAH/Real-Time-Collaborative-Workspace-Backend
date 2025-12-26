@@ -16,22 +16,30 @@ export class JobQueue {
 
   constructor() {
     // Configure Redis for Bull queue with TLS support for Upstash
-    let redisConfig: any;
+    let redisOptions: any;
     
     if (config.bull.redis.url) {
       // Parse URL to check if it uses TLS (rediss://)
       const useTLS = config.bull.redis.url.startsWith('rediss://');
       
-      redisConfig = {
-        redis: config.bull.redis.url,
-        ...(useTLS && {
-          tls: {
-            rejectUnauthorized: false, // Required for Upstash
+      if (useTLS) {
+        // For rediss:// URLs, configure TLS properly
+        redisOptions = {
+          redis: {
+            ...this.parseRedisUrl(config.bull.redis.url),
+            tls: {
+              rejectUnauthorized: false,
+            },
           },
-        }),
-      };
+        };
+      } else {
+        // For redis:// URLs without TLS
+        redisOptions = {
+          redis: config.bull.redis.url,
+        };
+      }
     } else {
-      redisConfig = {
+      redisOptions = {
         redis: {
           host: config.bull.redis.host,
           port: config.bull.redis.port,
@@ -41,7 +49,7 @@ export class JobQueue {
     }
 
     this.queue = new Bull('job-processing', {
-      ...redisConfig,
+      ...redisOptions,
       defaultJobOptions: {
         attempts: 3,
         backoff: {
@@ -54,6 +62,21 @@ export class JobQueue {
     });
 
     this.setupEventHandlers();
+  }
+
+  private parseRedisUrl(url: string): any {
+    // Parse rediss://default:password@host:port format
+    const match = url.match(/rediss?:\/\/(?:([^:]+):)?([^@]+)@([^:]+):(\d+)/);
+    if (match) {
+      const [, username, password, host, port] = match;
+      return {
+        host,
+        port: parseInt(port, 10),
+        password,
+        ...(username && username !== 'default' && { username }),
+      };
+    }
+    return {};
   }
 
   private setupEventHandlers(): void {
