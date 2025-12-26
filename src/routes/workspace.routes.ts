@@ -11,7 +11,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/v1/projects/{projectId}/workspaces:
+ * /projects/{projectId}/workspaces:
  *   post:
  *     tags: [Workspaces]
  *     summary: Create a new workspace
@@ -48,7 +48,7 @@ router.post(
 
 /**
  * @swagger
- * /api/v1/projects/{projectId}/workspaces:
+ * /projects/{projectId}/workspaces:
  *   get:
  *     tags: [Workspaces]
  *     summary: Get all workspaces for a project
@@ -68,7 +68,7 @@ router.get('/projects/:projectId/workspaces', workspaceController.getWorkspaces.
 
 /**
  * @swagger
- * /api/v1/workspaces/{workspaceId}:
+ * /workspaces/{workspaceId}:
  *   get:
  *     tags: [Workspaces]
  *     summary: Get workspace by ID
@@ -90,7 +90,7 @@ router.get('/workspaces/:workspaceId', workspaceController.getWorkspace.bind(wor
 
 /**
  * @swagger
- * /api/v1/workspaces/{workspaceId}:
+ * /workspaces/{workspaceId}:
  *   put:
  *     tags: [Workspaces]
  *     summary: Update workspace
@@ -121,7 +121,7 @@ router.put('/workspaces/:workspaceId', workspaceController.updateWorkspace.bind(
 
 /**
  * @swagger
- * /api/v1/workspaces/{workspaceId}:
+ * /workspaces/{workspaceId}:
  *   delete:
  *     tags: [Workspaces]
  *     summary: Delete workspace

@@ -11,7 +11,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/v1/jobs:
+ * /jobs:
  *   post:
  *     tags: [Jobs]
  *     summary: Create a new job
@@ -42,7 +42,7 @@ router.post('/', validate(createJobSchema), jobController.createJob.bind(jobCont
 
 /**
  * @swagger
- * /api/v1/jobs/{jobId}:
+ * /jobs/{jobId}:
  *   get:
  *     tags: [Jobs]
  *     summary: Get job status and details
@@ -64,7 +64,7 @@ router.get('/:jobId', jobController.getJob.bind(jobController));
 
 /**
  * @swagger
- * /api/v1/jobs:
+ * /jobs:
  *   get:
  *     tags: [Jobs]
  *     summary: Get all jobs

@@ -16,7 +16,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/v1/projects:
+ * /projects:
  *   post:
  *     tags: [Projects]
  *     summary: Create a new project
@@ -45,7 +45,7 @@ router.post('/', validate(createProjectSchema), projectController.createProject.
 
 /**
  * @swagger
- * /api/v1/projects:
+ * /projects:
  *   get:
  *     tags: [Projects]
  *     summary: Get all user projects
@@ -61,7 +61,7 @@ router.get('/', projectController.getProjects.bind(projectController));
 
 /**
  * @swagger
- * /api/v1/projects/{projectId}:
+ * /projects/{projectId}:
  *   get:
  *     tags: [Projects]
  *     summary: Get project by ID
@@ -83,7 +83,7 @@ router.get('/:projectId', projectController.getProject.bind(projectController));
 
 /**
  * @swagger
- * /api/v1/projects/{projectId}:
+ * /projects/{projectId}:
  *   put:
  *     tags: [Projects]
  *     summary: Update project
@@ -120,7 +120,7 @@ router.put(
 
 /**
  * @swagger
- * /api/v1/projects/{projectId}:
+ * /projects/{projectId}:
  *   delete:
  *     tags: [Projects]
  *     summary: Delete project

@@ -15,7 +15,7 @@ const authLimiter = rateLimit({
 
 /**
  * @swagger
- * /api/v1/auth/register:
+ * /auth/register:
  *   post:
  *     tags: [Authentication]
  *     summary: Register a new user
@@ -46,7 +46,7 @@ router.post('/register', authLimiter, validate(registerSchema), authController.r
 
 /**
  * @swagger
- * /api/v1/auth/login:
+ * /auth/login:
  *   post:
  *     tags: [Authentication]
  *     summary: Login user
@@ -74,7 +74,7 @@ router.post('/login', authLimiter, validate(loginSchema), authController.login.b
 
 /**
  * @swagger
- * /api/v1/auth/refresh:
+ * /auth/refresh:
  *   post:
  *     tags: [Authentication]
  *     summary: Refresh access token
@@ -99,7 +99,7 @@ router.post('/refresh', validate(refreshTokenSchema), authController.refreshToke
 
 /**
  * @swagger
- * /api/v1/auth/logout:
+ * /auth/logout:
  *   post:
  *     tags: [Authentication]
  *     summary: Logout user
