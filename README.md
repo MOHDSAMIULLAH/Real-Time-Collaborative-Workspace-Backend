@@ -329,7 +329,7 @@ ws.send(JSON.stringify({
 - **Queue**: Bull (Redis-based)
 - **WebSocket**: ws library
 - **Authentication**: JWT
-- **Validation**: Joi
+- **Validation**: Zod
 - **Testing**: Jest, Supertest
 - **Documentation**: Swagger/OpenAPI
 - **Containerization**: Docker, Docker Compose
@@ -374,7 +374,7 @@ npm run test:watch
    - Token rotation on refresh
 
 2. **Input Validation**
-   - Joi schema validation for all inputs
+   - Zod schema validation for all inputs
    - SQL injection prevention via parameterized queries
    - NoSQL injection prevention
 
