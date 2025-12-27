@@ -18,7 +18,7 @@ describe('MongoDB Connection', () => {
   it('should disconnect from MongoDB', async () => {
     await disconnectMongoDB();
     expect(mongoose.connection.readyState).toBe(0);
-    
+
     // Reconnect for other tests
     await connectMongoDB();
   });
@@ -27,7 +27,7 @@ describe('MongoDB Connection', () => {
     // Test that the connection has event listeners
     const errorListeners = mongoose.connection.listeners('error');
     const disconnectedListeners = mongoose.connection.listeners('disconnected');
-    
+
     expect(errorListeners.length).toBeGreaterThan(0);
     expect(disconnectedListeners.length).toBeGreaterThan(0);
   });

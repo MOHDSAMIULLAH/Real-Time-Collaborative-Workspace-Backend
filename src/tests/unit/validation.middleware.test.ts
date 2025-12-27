@@ -80,7 +80,7 @@ describe('Validation Middleware', () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalled();
-    
+
     const jsonCall = (res.json as jest.Mock).mock.calls[0][0];
     expect(jsonCall.details).toBeDefined();
     expect(jsonCall.details.length).toBeGreaterThan(0);

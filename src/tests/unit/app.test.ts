@@ -18,7 +18,7 @@ describe('App', () => {
   describe('Routes', () => {
     it('should return health status', async () => {
       const response = await request(app.app).get('/health');
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('status', 'ok');
       expect(response.body).toHaveProperty('timestamp');
@@ -27,7 +27,7 @@ describe('App', () => {
 
     it('should return root info', async () => {
       const response = await request(app.app).get('/');
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('message', 'Collaborative Workspace API');
       expect(response.body).toHaveProperty('version', '1.0.0');
@@ -36,37 +36,33 @@ describe('App', () => {
 
     it('should handle 404 for unknown routes', async () => {
       const response = await request(app.app).get('/unknown-route');
-      
+
       expect(response.status).toBe(404);
     });
 
     it('should have swagger docs route', async () => {
       const response = await request(app.app).get('/api/docs');
-      
+
       expect([200, 301, 302]).toContain(response.status);
     });
   });
 
   describe('CORS', () => {
     it('should have CORS headers', async () => {
-      const response = await request(app.app)
-        .get('/health')
-        .set('Origin', 'http://localhost:3000');
-      
+      const response = await request(app.app).get('/health').set('Origin', 'http://localhost:3000');
+
       expect(response.headers['access-control-allow-origin']).toBeDefined();
     });
   });
 
   describe('JSON parsing', () => {
     it('should parse JSON body', async () => {
-      const response = await request(app.app)
-        .post('/api/v1/auth/register')
-        .send({
-          name: 'Test User',
-          email: 'test@example.com',
-          password: 'password123',
-        });
-      
+      const response = await request(app.app).post('/api/v1/auth/register').send({
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
       // Should at least parse the body, even if auth fails
       expect(response.status).toBeDefined();
     });
@@ -75,7 +71,7 @@ describe('App', () => {
   describe('Security headers', () => {
     it('should include security headers', async () => {
       const response = await request(app.app).get('/health');
-      
+
       expect(response.headers['x-dns-prefetch-control']).toBeDefined();
       expect(response.headers['x-frame-options']).toBeDefined();
     });
@@ -87,7 +83,7 @@ describe('App', () => {
       (connectMongoDB as jest.Mock).mockResolvedValue(undefined);
 
       await expect(app.connectDatabases()).resolves.not.toThrow();
-      
+
       expect(postgresDB.connect).toHaveBeenCalled();
       expect(connectMongoDB).toHaveBeenCalled();
     });
@@ -104,7 +100,7 @@ describe('App', () => {
       (runMigrations as jest.Mock).mockResolvedValue(undefined);
 
       await expect(app.runDatabaseMigrations()).resolves.not.toThrow();
-      
+
       expect(runMigrations).toHaveBeenCalled();
     });
 
@@ -130,7 +126,7 @@ describe('App', () => {
       process.env.ENABLE_WORKER = 'true';
 
       app.startWorker();
-      
+
       // Second call should not throw but should skip
       expect(() => app.startWorker()).not.toThrow();
 

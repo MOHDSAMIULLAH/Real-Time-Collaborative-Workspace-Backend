@@ -89,7 +89,7 @@ describe('JobQueue', () => {
 
       // Wait for processing
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      
+
       const job = await jobQueue.getJobStatus(jobId);
       expect(job).toBeDefined();
     });
@@ -102,7 +102,7 @@ describe('JobQueue', () => {
 
       // Wait for processing
       await new Promise((resolve) => setTimeout(resolve, 3500));
-      
+
       const job = await jobQueue.getJobStatus(jobId);
       expect(job).toBeDefined();
     });
@@ -115,7 +115,7 @@ describe('JobQueue', () => {
 
       // Wait for processing
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+
       const job = await jobQueue.getJobStatus(jobId);
       expect(job).toBeDefined();
     });
