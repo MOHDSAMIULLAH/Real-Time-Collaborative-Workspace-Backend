@@ -4,7 +4,7 @@ process.env.NODE_ENV = 'test';
 import request from 'supertest';
 import { App } from '../../app';
 import { postgresDB } from '../../database/postgres';
-import { JobType, JobStatus } from '../../types/enums';
+import { JobType } from '../../types/enums';
 
 describe('Job Integration Tests', () => {
   let app: App;

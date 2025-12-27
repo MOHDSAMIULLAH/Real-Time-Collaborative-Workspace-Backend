@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'test';
 
-import { projectService, ProjectService } from '../../services/project.service';
+import { projectService } from '../../services/project.service';
 import { db, postgresDB } from '../../database/postgres';
 import { UserRole, ProjectStatus } from '../../types/enums';
 import logger from '../../utils/logger';

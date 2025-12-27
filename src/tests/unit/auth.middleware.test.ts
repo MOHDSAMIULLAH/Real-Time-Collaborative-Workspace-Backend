@@ -1,7 +1,7 @@
 // Set NODE_ENV before importing any application code
 process.env.NODE_ENV = 'test';
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { authenticate, authorize, AuthRequest } from '../../middleware/auth.middleware';
 import { authService } from '../../services/auth.service';
 import { userService } from '../../services/user.service';

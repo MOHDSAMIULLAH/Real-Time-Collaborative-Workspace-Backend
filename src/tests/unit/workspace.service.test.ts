@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'test';
 import { WorkspaceService } from '../../services/workspace.service';
 import { db } from '../../database/postgres';
 import { workspaces } from '../../database/schema';
-import { eq } from 'drizzle-orm';
 
 // Mock dependencies
 jest.mock('../../database/postgres', () => ({
