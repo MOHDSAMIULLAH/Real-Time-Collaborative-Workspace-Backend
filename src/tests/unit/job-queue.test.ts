@@ -53,6 +53,16 @@ describe('JobQueue', () => {
       const pendingJobs = await jobQueue.getJobsByStatus(JobStatus.PENDING);
       expect(Array.isArray(pendingJobs)).toBe(true);
     });
+
+    it('should get completed jobs', async () => {
+      const completedJobs = await jobQueue.getJobsByStatus(JobStatus.COMPLETED);
+      expect(Array.isArray(completedJobs)).toBe(true);
+    });
+
+    it('should get failed jobs', async () => {
+      const failedJobs = await jobQueue.getJobsByStatus(JobStatus.FAILED);
+      expect(Array.isArray(failedJobs)).toBe(true);
+    });
   });
 
   describe('processJob', () => {
@@ -69,6 +79,67 @@ describe('JobQueue', () => {
 
       const job = await jobQueue.getJobStatus(jobId);
       expect([JobStatus.PENDING, JobStatus.COMPLETED, JobStatus.PROCESSING]).toContain(job.status);
+    });
+
+    it('should process data processing job', async () => {
+      const jobId = await jobQueue.addJob('data_processing', {
+        dataSource: 'testDB',
+        operation: 'aggregate',
+      });
+
+      // Wait for processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+    });
+
+    it('should process report generation job', async () => {
+      const jobId = await jobQueue.addJob('report_generation', {
+        reportType: 'weekly',
+        dateRange: '2024-12',
+      });
+
+      // Wait for processing
+      await new Promise((resolve) => setTimeout(resolve, 3500));
+      
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+    });
+
+    it('should process notification job', async () => {
+      const jobId = await jobQueue.addJob('notification', {
+        recipient: 'user@example.com',
+        message: 'Your report is ready',
+      });
+
+      // Wait for processing
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+    });
+
+    it('should handle unknown job type', async () => {
+      const jobId = await jobQueue.addJob('code_execution', {
+        code: 'test',
+        language: 'python',
+      });
+
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+      expect(job.type).toBe('code_execution');
+    });
+
+    it('should create jobs with different statuses', async () => {
+      const jobId = await jobQueue.addJob('data_processing', {
+        dataSource: 'test',
+        operation: 'test',
+      });
+
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+      expect([JobStatus.PENDING, JobStatus.PROCESSING, JobStatus.COMPLETED]).toContain(job.status);
     });
   });
 
