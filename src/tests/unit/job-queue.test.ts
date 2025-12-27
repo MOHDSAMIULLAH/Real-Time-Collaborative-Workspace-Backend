@@ -71,4 +71,31 @@ describe('JobQueue', () => {
       expect([JobStatus.PENDING, JobStatus.COMPLETED, JobStatus.PROCESSING]).toContain(job.status);
     });
   });
+
+  describe('getJobStatus', () => {
+    it('should get job status by id', async () => {
+      const jobId = await jobQueue.addJob('notification', {
+        recipient: 'test@example.com',
+        message: 'Test notification',
+      });
+
+      const job = await jobQueue.getJobStatus(jobId);
+      expect(job).toBeDefined();
+      expect(job.id).toBe(jobId);
+      expect(job.type).toBe('notification');
+    });
+
+    it('should return null for non-existent job', async () => {
+      const job = await jobQueue.getJobStatus('00000000-0000-0000-0000-000000000000');
+      expect(job).toBeNull();
+    });
+  });
+
+  describe('getQueue', () => {
+    it('should return Bull queue instance', () => {
+      const queue = jobQueue.getQueue();
+      expect(queue).toBeDefined();
+      expect(queue.name).toBe('job-processing');
+    });
+  });
 });

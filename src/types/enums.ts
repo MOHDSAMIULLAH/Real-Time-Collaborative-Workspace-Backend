@@ -18,6 +18,13 @@ export enum JobStatus {
   RETRYING = 'retrying',
 }
 
+export enum JobType {
+  EXPORT = 'export',
+  IMPORT = 'import',
+  BACKUP = 'backup',
+  SYNC = 'sync',
+}
+
 export enum EventType {
   USER_JOINED = 'user_joined',
   USER_LEFT = 'user_left',

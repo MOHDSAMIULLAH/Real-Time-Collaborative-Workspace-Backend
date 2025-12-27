@@ -151,6 +151,50 @@ describe('Project Integration Tests', () => {
     });
   });
 
+  describe('DELETE /api/v1/projects/:projectId', () => {
+    it('should delete project', async () => {
+      // Create a new project specifically for deletion test
+      const createResponse = await request(server)
+        .post('/api/v1/projects')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'Project To Delete',
+          description: 'This will be deleted',
+        });
+
+      const deleteProjectId = createResponse.body.project.id;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const response = await request(server)
+        .delete(`/api/v1/projects/${deleteProjectId}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Project deleted successfully');
+
+      // Verify project is deleted or marked as deleted (soft delete may return archived project)
+      const getResponse = await request(server)
+        .get(`/api/v1/projects/${deleteProjectId}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Project might be soft deleted (status 200 with deleted status) or truly deleted (404)
+      expect([404, 200]).toContain(getResponse.status);
+      if (getResponse.status === 200) {
+        // If soft delete, check status is deleted
+        expect(getResponse.body.project.status).toBe('deleted');
+      }
+    });
+
+    it('should return 404 or 403 for non-existent project', async () => {
+      const response = await request(server)
+        .delete('/api/v1/projects/00000000-0000-0000-0000-000000000000')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Can return 404 (not found) or 403 (forbidden - no access to non-existent project)
+      expect([404, 403]).toContain(response.status);
+    });
+  });
+
   describe('Project Members', () => {
     beforeAll(async () => {
       await request(server)
@@ -185,6 +229,37 @@ describe('Project Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.members).toBeDefined();
       expect(response.body.members.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should fail to invite non-existent user', async () => {
+      const response = await request(server)
+        .post(`/api/v1/projects/${projectId}/members`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          email: 'nonexistent@example.com',
+          role: 'collaborator',
+        });
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should fail to get members without authentication', async () => {
+      const response = await request(server)
+        .get(`/api/v1/projects/${projectId}/members`);
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should fail to invite member to non-existent project', async () => {
+      const response = await request(server)
+        .post('/api/v1/projects/00000000-0000-0000-0000-000000000000/members')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          email: 'test-member@example.com',
+          role: 'collaborator',
+        });
+
+      expect([403, 404]).toContain(response.status);
     });
   });
 });
