@@ -112,11 +112,7 @@ router.get('/:projectId', projectController.getProject);
  *       200:
  *         description: Project updated successfully
  */
-router.put(
-  '/:projectId',
-  validate(updateProjectSchema),
-  projectController.updateProject
-);
+router.put('/:projectId', validate(updateProjectSchema), projectController.updateProject);
 
 /**
  * @swagger
@@ -140,11 +136,7 @@ router.delete('/:projectId', projectController.deleteProject);
 
 // Project members routes
 router.get('/:projectId/members', projectController.getMembers);
-router.post(
-  '/:projectId/members',
-  validate(inviteMemberSchema),
-  projectController.inviteMember
-);
+router.post('/:projectId/members', validate(inviteMemberSchema), projectController.inviteMember);
 router.put(
   '/:projectId/members/:memberId',
   validate(updateMemberRoleSchema),

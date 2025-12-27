@@ -139,10 +139,7 @@ export class WebSocketServer {
     }
 
     // Update session activity
-    await Session.updateOne(
-      { sessionId: ws.sessionId },
-      { lastActivity: new Date() }
-    );
+    await Session.updateOne({ sessionId: ws.sessionId }, { lastActivity: new Date() });
 
     const event: CollaborationEvent = {
       type,
@@ -177,10 +174,7 @@ export class WebSocketServer {
       }
 
       // Update session
-      await Session.updateOne(
-        { sessionId: ws.sessionId },
-        { isActive: false }
-      );
+      await Session.updateOne({ sessionId: ws.sessionId }, { isActive: false });
 
       // Notify others about user leaving
       await this.broadcastEvent({
@@ -217,7 +211,11 @@ export class WebSocketServer {
     projectClients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         // Don't send back to sender for certain events
-        if (client.userId !== event.userId || event.type === EventType.USER_JOINED || event.type === EventType.USER_LEFT) {
+        if (
+          client.userId !== event.userId ||
+          event.type === EventType.USER_JOINED ||
+          event.type === EventType.USER_LEFT
+        ) {
           client.send(message);
         }
       }
@@ -228,7 +226,7 @@ export class WebSocketServer {
     const interval = setInterval(() => {
       this.wss.clients.forEach((ws: WebSocket) => {
         const client = ws as WebSocketClient;
-        
+
         if (client.isAlive === false) {
           return client.terminate();
         }
@@ -247,12 +245,12 @@ export class WebSocketServer {
     // Subscribe to all collaboration channels
     // This allows multiple WebSocket servers to share events
     redisClient.subscriber.psubscribe('collaboration:*');
-    
+
     redisClient.subscriber.on('pmessage', (pattern, channel, message) => {
       try {
         const event: CollaborationEvent = JSON.parse(message);
         const projectId = channel.split(':')[1];
-        
+
         // Broadcast to local clients
         this.broadcastToProject(projectId, event);
       } catch (error) {

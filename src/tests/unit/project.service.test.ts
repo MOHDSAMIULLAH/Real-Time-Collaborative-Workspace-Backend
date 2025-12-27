@@ -41,17 +41,23 @@ describe('ProjectService', () => {
         }),
       });
 
-      (db.insert as jest.Mock).mockReturnValueOnce({
-        values: jest.fn().mockReturnValue({
-          returning: jest.fn().mockResolvedValue([mockProject]),
-        }),
-      }).mockReturnValueOnce({
-        values: jest.fn().mockResolvedValue(undefined),
-      });
+      (db.insert as jest.Mock)
+        .mockReturnValueOnce({
+          values: jest.fn().mockReturnValue({
+            returning: jest.fn().mockResolvedValue([mockProject]),
+          }),
+        })
+        .mockReturnValueOnce({
+          values: jest.fn().mockResolvedValue(undefined),
+        });
 
       mockClient.query.mockResolvedValueOnce(undefined).mockResolvedValueOnce(undefined);
 
-      const result = await projectService.createProject('Test Project', 'Test Description', 'user-123');
+      const result = await projectService.createProject(
+        'Test Project',
+        'Test Description',
+        'user-123'
+      );
 
       expect(result).toBeDefined();
       expect(result.name).toBe('Test Project');
@@ -70,9 +76,9 @@ describe('ProjectService', () => {
 
       mockClient.query.mockResolvedValue(undefined);
 
-      await expect(
-        projectService.createProject('Test', 'Desc', 'user-123')
-      ).rejects.toThrow('Database error');
+      await expect(projectService.createProject('Test', 'Desc', 'user-123')).rejects.toThrow(
+        'Database error'
+      );
 
       expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
       expect(mockClient.release).toHaveBeenCalled();
@@ -292,7 +298,12 @@ describe('ProjectService', () => {
       });
 
       await expect(
-        projectService.inviteMember('project-123', 'nonexistent@example.com', UserRole.COLLABORATOR, 'user-123')
+        projectService.inviteMember(
+          'project-123',
+          'nonexistent@example.com',
+          UserRole.COLLABORATOR,
+          'user-123'
+        )
       ).rejects.toThrow('User not found');
     });
   });
@@ -307,9 +318,7 @@ describe('ProjectService', () => {
 
       await projectService.updateMemberRole('project-123', 'user-456', UserRole.VIEWER);
 
-      expect(logger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Member role updated')
-      );
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Member role updated'));
     });
   });
 
@@ -321,9 +330,7 @@ describe('ProjectService', () => {
 
       await projectService.removeMember('project-123', 'user-456');
 
-      expect(logger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Member removed')
-      );
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Member removed'));
     });
   });
 

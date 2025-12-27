@@ -5,10 +5,10 @@ import logger from '../../utils/logger';
 export const runMigrations = async (): Promise<void> => {
   try {
     logger.info('Starting database migrations...');
-    
+
     // Run migrations using Drizzle
     await migrate(db, { migrationsFolder: './src/database/migrations' });
-    
+
     logger.info('Database migrations completed successfully');
   } catch (error) {
     logger.error('Error running database migrations', error);

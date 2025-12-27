@@ -52,7 +52,7 @@ describe('UserService', () => {
       };
 
       (authService.hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
-      
+
       const mockReturning = jest.fn().mockResolvedValue([mockUser]);
       const mockValues = jest.fn().mockReturnValue({ returning: mockReturning });
       (db.insert as jest.Mock).mockReturnValue({ values: mockValues });
@@ -79,10 +79,10 @@ describe('UserService', () => {
     it('should throw error for duplicate email', async () => {
       const mockHashedPassword = 'hashed_password_123';
       (authService.hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
-      
+
       const duplicateError: any = new Error('Duplicate key');
       duplicateError.code = '23505';
-      
+
       const mockReturning = jest.fn().mockRejectedValue(duplicateError);
       const mockValues = jest.fn().mockReturnValue({ returning: mockReturning });
       (db.insert as jest.Mock).mockReturnValue({ values: mockValues });
@@ -95,9 +95,9 @@ describe('UserService', () => {
     it('should throw error for other database errors', async () => {
       const mockHashedPassword = 'hashed_password_123';
       (authService.hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
-      
+
       const dbError = new Error('Database connection failed');
-      
+
       const mockReturning = jest.fn().mockRejectedValue(dbError);
       const mockValues = jest.fn().mockReturnValue({ returning: mockReturning });
       (db.insert as jest.Mock).mockReturnValue({ values: mockValues });
@@ -211,11 +211,13 @@ describe('UserService', () => {
       });
 
       expect(db.update).toHaveBeenCalledWith(users);
-      expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Updated Name',
-        email: 'updated@example.com',
-        updatedAt: expect.any(Date),
-      }));
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Updated Name',
+          email: 'updated@example.com',
+          updatedAt: expect.any(Date),
+        })
+      );
       expect(result.name).toBe('Updated Name');
       expect(result.email).toBe('updated@example.com');
       expect(result.password).toBe(''); // Password should be empty in response
@@ -240,10 +242,12 @@ describe('UserService', () => {
         name: 'New Name Only',
       });
 
-      expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'New Name Only',
-        updatedAt: expect.any(Date),
-      }));
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'New Name Only',
+          updatedAt: expect.any(Date),
+        })
+      );
       expect(result.name).toBe('New Name Only');
     });
   });

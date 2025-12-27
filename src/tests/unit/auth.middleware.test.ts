@@ -50,9 +50,9 @@ describe('Auth Middleware', () => {
         authorization: 'Bearer valid-token',
       };
 
-      (authService.verifyAccessToken as jest.Mock).mockReturnValue({ 
+      (authService.verifyAccessToken as jest.Mock).mockReturnValue({
         userId: 'user-123',
-        email: 'test@example.com'
+        email: 'test@example.com',
       });
       (userService.findById as jest.Mock).mockResolvedValue(mockUser);
 
@@ -64,7 +64,7 @@ describe('Auth Middleware', () => {
       expect((mockRequest as AuthRequest).user).toEqual({
         userId: 'user-123',
         email: 'test@example.com',
-        role: undefined
+        role: undefined,
       });
     });
 
@@ -109,9 +109,9 @@ describe('Auth Middleware', () => {
         authorization: 'Bearer valid-token',
       };
 
-      (authService.verifyAccessToken as jest.Mock).mockReturnValue({ 
+      (authService.verifyAccessToken as jest.Mock).mockReturnValue({
         userId: 'user-123',
-        email: 'test@example.com'
+        email: 'test@example.com',
       });
       (userService.findById as jest.Mock).mockResolvedValue(null);
 
@@ -149,7 +149,9 @@ describe('Auth Middleware', () => {
       middleware(mockRequest as AuthRequest, mockResponse as Response, nextFunction);
 
       expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Forbidden: Insufficient permissions' });
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Forbidden: Insufficient permissions',
+      });
       expect(nextFunction).not.toHaveBeenCalled();
     });
 

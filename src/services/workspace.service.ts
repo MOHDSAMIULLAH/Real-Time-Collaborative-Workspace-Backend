@@ -10,11 +10,14 @@ export class WorkspaceService {
     name: string,
     settings: Record<string, any> = {}
   ): Promise<IWorkspace> {
-    const [workspace] = await db.insert(workspaces).values({
-      projectId,
-      name,
-      settings,
-    }).returning();
+    const [workspace] = await db
+      .insert(workspaces)
+      .values({
+        projectId,
+        name,
+        settings,
+      })
+      .returning();
 
     logger.info(`Workspace created: ${workspace.id} for project: ${projectId}`);
 
@@ -29,7 +32,11 @@ export class WorkspaceService {
   }
 
   async getWorkspaceById(workspaceId: string): Promise<IWorkspace | null> {
-    const [workspace] = await db.select().from(workspaces).where(eq(workspaces.id, workspaceId)).limit(1);
+    const [workspace] = await db
+      .select()
+      .from(workspaces)
+      .where(eq(workspaces.id, workspaceId))
+      .limit(1);
 
     if (!workspace) {
       return null;
@@ -62,10 +69,7 @@ export class WorkspaceService {
     }));
   }
 
-  async updateWorkspace(
-    workspaceId: string,
-    updates: Partial<IWorkspace>
-  ): Promise<IWorkspace> {
+  async updateWorkspace(workspaceId: string, updates: Partial<IWorkspace>): Promise<IWorkspace> {
     const updateData: any = {};
 
     if (updates.name) {
@@ -78,7 +82,8 @@ export class WorkspaceService {
 
     updateData.updatedAt = new Date();
 
-    const [workspace] = await db.update(workspaces)
+    const [workspace] = await db
+      .update(workspaces)
       .set(updateData)
       .where(eq(workspaces.id, workspaceId))
       .returning();

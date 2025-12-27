@@ -16,27 +16,31 @@ describe('Project Integration Tests', () => {
     await app.connectDatabases();
     await app.runDatabaseMigrations();
     server = app.app;
-    
+
     // Clean up any leftover test data from previous failed runs
     try {
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       // Ignore cleanup errors on first run
     }
 
     // Create a test user and get token
-    const response = await request(server)
-      .post('/api/v1/auth/register')
-      .send({
-        email: 'test-project@example.com',
-        password: 'TestPassword123!',
-        name: 'Project Test User',
-      });
+    const response = await request(server).post('/api/v1/auth/register').send({
+      email: 'test-project@example.com',
+      password: 'TestPassword123!',
+      name: 'Project Test User',
+    });
 
     accessToken = response.body.tokens?.accessToken;
-    
+
     if (!accessToken) {
       console.error('Registration response:', response.body);
       throw new Error(`Failed to get access token for tests. Status: ${response.status}`);
@@ -49,8 +53,14 @@ describe('Project Integration Tests', () => {
   afterAll(async () => {
     // Clean up in correct order to avoid foreign key violations
     try {
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       console.error('Cleanup error:', error);
@@ -74,18 +84,16 @@ describe('Project Integration Tests', () => {
       expect(response.body.project.name).toBe('Test Project');
 
       projectId = response.body.project.id;
-      
+
       // Add delay to ensure project member is committed
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .post('/api/v1/projects')
-        .send({
-          name: 'Test Project',
-          description: 'This is a test project',
-        });
+      const response = await request(server).post('/api/v1/projects').send({
+        name: 'Test Project',
+        description: 'This is a test project',
+      });
 
       expect(response.status).toBe(401);
     });
@@ -197,13 +205,11 @@ describe('Project Integration Tests', () => {
 
   describe('Project Members', () => {
     beforeAll(async () => {
-      await request(server)
-        .post('/api/v1/auth/register')
-        .send({
-          email: 'test-member@example.com',
-          password: 'TestPassword123!',
-          name: 'Member Test User',
-        });
+      await request(server).post('/api/v1/auth/register').send({
+        email: 'test-member@example.com',
+        password: 'TestPassword123!',
+        name: 'Member Test User',
+      });
       // Add delay to avoid rate limiting
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
@@ -244,8 +250,7 @@ describe('Project Integration Tests', () => {
     });
 
     it('should fail to get members without authentication', async () => {
-      const response = await request(server)
-        .get(`/api/v1/projects/${projectId}/members`);
+      const response = await request(server).get(`/api/v1/projects/${projectId}/members`);
 
       expect(response.status).toBe(401);
     });

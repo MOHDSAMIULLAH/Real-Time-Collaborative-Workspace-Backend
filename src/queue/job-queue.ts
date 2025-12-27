@@ -17,11 +17,11 @@ export class JobQueue {
   constructor() {
     // Configure Redis for Bull queue with TLS support for Upstash
     let redisOptions: any;
-    
+
     if (config.bull.redis.url) {
       // Parse URL to check if it uses TLS (rediss://)
       const useTLS = config.bull.redis.url.startsWith('rediss://');
-      
+
       if (useTLS) {
         // For rediss:// URLs, configure TLS properly
         redisOptions = {

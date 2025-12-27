@@ -161,7 +161,7 @@ export class App {
 
   async close(): Promise<void> {
     logger.info('Closing application...');
-    
+
     if (this.wsServer) {
       this.wsServer.close();
     }

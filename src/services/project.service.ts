@@ -8,17 +8,20 @@ import logger from '../utils/logger';
 export class ProjectService {
   async createProject(name: string, description: string, ownerId: string): Promise<IProject> {
     const client = await postgresDB.getClient();
-    
+
     try {
       await client.query('BEGIN');
 
       // Create project using Drizzle
-      const [project] = await db.insert(projects).values({
-        name,
-        description,
-        ownerId,
-        status: ProjectStatus.ACTIVE,
-      }).returning();
+      const [project] = await db
+        .insert(projects)
+        .values({
+          name,
+          description,
+          ownerId,
+          status: ProjectStatus.ACTIVE,
+        })
+        .returning();
 
       // Add owner as project member
       await db.insert(projectMembers).values({
@@ -81,10 +84,7 @@ export class ProjectService {
       })
       .from(projects)
       .innerJoin(projectMembers, eq(projects.id, projectMembers.projectId))
-      .where(and(
-        eq(projectMembers.userId, userId),
-        ne(projects.status, ProjectStatus.DELETED)
-      ))
+      .where(and(eq(projectMembers.userId, userId), ne(projects.status, ProjectStatus.DELETED)))
       .orderBy(projects.createdAt);
 
     return results.map((row) => ({
@@ -98,10 +98,7 @@ export class ProjectService {
     }));
   }
 
-  async updateProject(
-    projectId: string,
-    updates: Partial<IProject>
-  ): Promise<IProject> {
+  async updateProject(projectId: string, updates: Partial<IProject>): Promise<IProject> {
     const updateData: any = {};
 
     if (updates.name) {
@@ -118,7 +115,8 @@ export class ProjectService {
 
     updateData.updatedAt = new Date();
 
-    const [project] = await db.update(projects)
+    const [project] = await db
+      .update(projects)
       .set(updateData)
       .where(eq(projects.id, projectId))
       .returning();
@@ -137,13 +135,14 @@ export class ProjectService {
   }
 
   async deleteProject(projectId: string): Promise<void> {
-    await db.update(projects)
-      .set({ 
-        status: ProjectStatus.DELETED, 
-        updatedAt: new Date() 
+    await db
+      .update(projects)
+      .set({
+        status: ProjectStatus.DELETED,
+        updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId));
-    
+
     logger.info(`Project deleted: ${projectId}`);
   }
 
@@ -172,7 +171,11 @@ export class ProjectService {
     invitedBy: string
   ): Promise<IProjectMember> {
     // Find user by email
-    const [user] = await db.select({ id: users.id }).from(users).where(eq(users.email, userEmail)).limit(1);
+    const [user] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
 
     if (!user) {
       throw new Error('User not found');
@@ -180,7 +183,8 @@ export class ProjectService {
 
     const userId = user.id;
 
-    const [member] = await db.insert(projectMembers)
+    const [member] = await db
+      .insert(projectMembers)
       .values({
         projectId,
         userId,
@@ -205,28 +209,20 @@ export class ProjectService {
     };
   }
 
-  async updateMemberRole(
-    projectId: string,
-    userId: string,
-    role: UserRole
-  ): Promise<void> {
-    await db.update(projectMembers)
+  async updateMemberRole(projectId: string, userId: string, role: UserRole): Promise<void> {
+    await db
+      .update(projectMembers)
       .set({ role })
-      .where(and(
-        eq(projectMembers.projectId, projectId),
-        eq(projectMembers.userId, userId)
-      ));
-    
+      .where(and(eq(projectMembers.projectId, projectId), eq(projectMembers.userId, userId)));
+
     logger.info(`Member role updated in project ${projectId}: ${userId} -> ${role}`);
   }
 
   async removeMember(projectId: string, userId: string): Promise<void> {
-    await db.delete(projectMembers)
-      .where(and(
-        eq(projectMembers.projectId, projectId),
-        eq(projectMembers.userId, userId)
-      ));
-    
+    await db
+      .delete(projectMembers)
+      .where(and(eq(projectMembers.projectId, projectId), eq(projectMembers.userId, userId)));
+
     logger.info(`Member removed from project ${projectId}: ${userId}`);
   }
 
@@ -234,10 +230,7 @@ export class ProjectService {
     const [member] = await db
       .select({ role: projectMembers.role })
       .from(projectMembers)
-      .where(and(
-        eq(projectMembers.projectId, projectId),
-        eq(projectMembers.userId, userId)
-      ))
+      .where(and(eq(projectMembers.projectId, projectId), eq(projectMembers.userId, userId)))
       .limit(1);
 
     if (!member) {

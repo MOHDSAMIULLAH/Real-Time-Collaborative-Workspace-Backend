@@ -9,13 +9,16 @@ export class UserService {
   async createUser(email: string, password: string, name: string): Promise<IUser> {
     try {
       const hashedPassword = await authService.hashPassword(password);
-      
-      const [user] = await db.insert(users).values({
-        email,
-        password: hashedPassword,
-        name,
-      }).returning();
-      
+
+      const [user] = await db
+        .insert(users)
+        .values({
+          email,
+          password: hashedPassword,
+          name,
+        })
+        .returning();
+
       logger.info(`User created: ${user.id}`);
       return {
         id: user.id,
@@ -26,7 +29,8 @@ export class UserService {
         updatedAt: user.updatedAt,
       };
     } catch (error: any) {
-      if (error.code === '23505') { // Unique violation
+      if (error.code === '23505') {
+        // Unique violation
         throw new Error('Email already exists');
       }
       logger.error('Error creating user', error);
@@ -36,11 +40,11 @@ export class UserService {
 
   async findByEmail(email: string): Promise<IUser | null> {
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    
+
     if (!user) {
       return null;
     }
-    
+
     return {
       id: user.id,
       email: user.email,
@@ -53,11 +57,11 @@ export class UserService {
 
   async findById(id: string): Promise<IUser | null> {
     const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    
+
     if (!user) {
       return null;
     }
-    
+
     return {
       id: user.id,
       email: user.email,
@@ -81,10 +85,7 @@ export class UserService {
 
     updateData.updatedAt = new Date();
 
-    const [user] = await db.update(users)
-      .set(updateData)
-      .where(eq(users.id, id))
-      .returning();
+    const [user] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
 
     return {
       id: user.id,

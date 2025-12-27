@@ -21,21 +21,25 @@ describe('Job Integration Tests', () => {
 
     // Clean up any leftover test data
     try {
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       // Ignore cleanup errors
     }
 
     // Create test user and get token
-    const userResponse = await request(server)
-      .post('/api/v1/auth/register')
-      .send({
-        email: 'test-job@example.com',
-        password: 'TestPassword123!',
-        name: 'Job Test User',
-      });
+    const userResponse = await request(server).post('/api/v1/auth/register').send({
+      email: 'test-job@example.com',
+      password: 'TestPassword123!',
+      name: 'Job Test User',
+    });
 
     accessToken = userResponse.body.tokens?.accessToken;
 
@@ -64,8 +68,14 @@ describe('Job Integration Tests', () => {
   afterAll(async () => {
     // Clean up
     try {
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       console.error('Cleanup error:', error);
@@ -94,13 +104,11 @@ describe('Job Integration Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .post('/api/v1/jobs')
-        .send({
-          projectId,
-          type: JobType.EXPORT,
-          payload: {},
-        });
+      const response = await request(server).post('/api/v1/jobs').send({
+        projectId,
+        type: JobType.EXPORT,
+        payload: {},
+      });
 
       expect(response.status).toBe(401);
     });
@@ -133,8 +141,7 @@ describe('Job Integration Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .get(`/api/v1/jobs/${jobId}`);
+      const response = await request(server).get(`/api/v1/jobs/${jobId}`);
 
       expect(response.status).toBe(401);
     });
@@ -161,8 +168,7 @@ describe('Job Integration Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .get(`/api/v1/jobs?projectId=${projectId}`);
+      const response = await request(server).get(`/api/v1/jobs?projectId=${projectId}`);
 
       expect(response.status).toBe(401);
     });

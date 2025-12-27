@@ -20,22 +20,29 @@ describe('Workspace Integration Tests', () => {
 
     // Clean up any leftover test data from previous failed runs
     try {
-      await postgresDB.query('DELETE FROM workspaces WHERE project_id IN (SELECT id FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1))', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM workspaces WHERE project_id IN (SELECT id FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1))',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       // Ignore cleanup errors on first run
     }
 
     // Create a test user and get token
-    const userResponse = await request(server)
-      .post('/api/v1/auth/register')
-      .send({
-        email: 'test-workspace@example.com',
-        password: 'TestPassword123!',
-        name: 'Workspace Test User',
-      });
+    const userResponse = await request(server).post('/api/v1/auth/register').send({
+      email: 'test-workspace@example.com',
+      password: 'TestPassword123!',
+      name: 'Workspace Test User',
+    });
 
     accessToken = userResponse.body.tokens?.accessToken;
 
@@ -65,9 +72,18 @@ describe('Workspace Integration Tests', () => {
   afterAll(async () => {
     // Clean up in correct order
     try {
-      await postgresDB.query('DELETE FROM workspaces WHERE project_id IN (SELECT id FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1))', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
-      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query(
+        'DELETE FROM workspaces WHERE project_id IN (SELECT id FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1))',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
+      await postgresDB.query(
+        'DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)',
+        ['test%@example.com']
+      );
       await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
     } catch (error) {
       console.error('Cleanup error:', error);
@@ -96,12 +112,10 @@ describe('Workspace Integration Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .post(`/api/v1/projects/${projectId}/workspaces`)
-        .send({
-          name: 'Test Workspace',
-          settings: {},
-        });
+      const response = await request(server).post(`/api/v1/projects/${projectId}/workspaces`).send({
+        name: 'Test Workspace',
+        settings: {},
+      });
 
       expect(response.status).toBe(401);
     });
@@ -120,8 +134,7 @@ describe('Workspace Integration Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await request(server)
-        .get(`/api/v1/projects/${projectId}/workspaces`);
+      const response = await request(server).get(`/api/v1/projects/${projectId}/workspaces`);
 
       expect(response.status).toBe(401);
     });

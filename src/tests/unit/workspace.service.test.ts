@@ -48,7 +48,9 @@ describe('WorkspaceService', () => {
       const mockValues = jest.fn().mockReturnValue({ returning: mockReturning });
       (db.insert as jest.Mock).mockReturnValue({ values: mockValues });
 
-      const result = await workspaceService.createWorkspace('project-123', 'Test Workspace', { theme: 'dark' });
+      const result = await workspaceService.createWorkspace('project-123', 'Test Workspace', {
+        theme: 'dark',
+      });
 
       expect(db.insert).toHaveBeenCalledWith(workspaces);
       expect(mockValues).toHaveBeenCalledWith({
@@ -200,11 +202,13 @@ describe('WorkspaceService', () => {
       });
 
       expect(db.update).toHaveBeenCalledWith(workspaces);
-      expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Updated Workspace',
-        settings: { theme: 'dark', autoSave: true },
-        updatedAt: expect.any(Date),
-      }));
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Updated Workspace',
+          settings: { theme: 'dark', autoSave: true },
+          updatedAt: expect.any(Date),
+        })
+      );
       expect(result.name).toBe('Updated Workspace');
     });
 
@@ -227,13 +231,17 @@ describe('WorkspaceService', () => {
         name: 'Partially Updated',
       });
 
-      expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Partially Updated',
-        updatedAt: expect.any(Date),
-      }));
-      expect(mockSet).toHaveBeenCalledWith(expect.not.objectContaining({
-        settings: expect.anything(),
-      }));
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Partially Updated',
+          updatedAt: expect.any(Date),
+        })
+      );
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          settings: expect.anything(),
+        })
+      );
     });
   });
 

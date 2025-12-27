@@ -8,13 +8,14 @@ import { config } from '../config';
 const router = Router();
 
 // Rate limiting for auth routes (disabled in test environment)
-const authLimiter = config.env === 'test' 
-  ? (req: any, res: any, next: any) => next() // Pass through in test
-  : rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 5, // 5 requests per window
-      message: 'Too many authentication attempts, please try again later',
-    });
+const authLimiter =
+  config.env === 'test'
+    ? (req: any, res: any, next: any) => next() // Pass through in test
+    : rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 5, // 5 requests per window
+        message: 'Too many authentication attempts, please try again later',
+      });
 
 /**
  * @swagger

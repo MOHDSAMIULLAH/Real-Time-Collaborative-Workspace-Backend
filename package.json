@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "migrate": "ts-node src/database/migrations/run-migrations.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",

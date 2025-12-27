@@ -12,12 +12,13 @@ class PostgresConnection {
 
   constructor() {
     // Initialize postgres-js client for Drizzle ORM
-    const connectionString = config.database.postgres.connectionString ||
+    const connectionString =
+      config.database.postgres.connectionString ||
       `postgresql://${config.database.postgres.user}:${config.database.postgres.password}@${config.database.postgres.host}:${config.database.postgres.port}/${config.database.postgres.database}`;
-    
+
     // Disable prefetch for Supabase Transaction pool mode compatibility
     this.client = postgres(connectionString, { prepare: false });
-    
+
     // Initialize Drizzle ORM with postgres-js client
     this.db = drizzle(this.client, { schema });
 

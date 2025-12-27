@@ -13,7 +13,7 @@ class RedisConnection {
     // If REDIS_URL is provided (e.g., Upstash), configure for TLS
     if (config.database.redis.url) {
       this.initializeRedisClient();
-      
+
       // Check if using TLS (rediss://)
       const useTLS = config.database.redis.url.startsWith('rediss://');
       const ioredisConfig = useTLS
@@ -34,7 +34,7 @@ class RedisConnection {
             },
             maxRetriesPerRequest: 3,
           };
-      
+
       // Initialize ioredis for backward compatibility with TLS config
       this.client = new Redis(config.database.redis.url, ioredisConfig);
       this.subscriber = new Redis(config.database.redis.url, ioredisConfig);
