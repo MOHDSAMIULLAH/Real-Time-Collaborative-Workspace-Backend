@@ -15,12 +15,8 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${config.port}/api/${config.apiVersion}`,
-        description: 'Development server',
-      },
-      {
-        url: `https://api.example.com/api/${config.apiVersion}`,
-        description: 'Production server',
+        url: `${config.appUrl}/api/${config.apiVersion}`,
+        description: config.env === 'production' ? 'Production server' : 'Development server',
       },
     ],
     components: {

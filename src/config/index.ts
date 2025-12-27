@@ -6,6 +6,7 @@ export const config = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
   apiVersion: process.env.API_VERSION || 'v1',
+  appUrl: process.env.APP_URL || 'http://localhost:3000',
 
   database: {
     postgres: {
