@@ -1,3 +1,6 @@
+// Set NODE_ENV before importing any application code
+process.env.NODE_ENV = 'test';
+
 import request from 'supertest';
 import { App } from '../../app';
 import { postgresDB } from '../../database/postgres';
@@ -11,11 +14,26 @@ describe('Auth Integration Tests', () => {
     await app.connectDatabases();
     await app.runDatabaseMigrations();
     server = app.app;
+    
+    // Clean up any leftover test data from previous failed runs
+    try {
+      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    } catch (error) {
+      // Ignore cleanup errors on first run
+    }
   });
 
   afterAll(async () => {
-    // Clean up test data
-    await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    // Clean up test data in correct order to avoid foreign key violations
+    try {
+      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
     await app.close();
   });
 
@@ -58,6 +76,9 @@ describe('Auth Integration Tests', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Email already registered');
+      
+      // Add delay between tests
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
     it('should fail with invalid data', async () => {
@@ -84,6 +105,8 @@ describe('Auth Integration Tests', () => {
           password: 'TestPassword123!',
           name: 'Login Test User',
         });
+      // Add delay to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     it('should login successfully', async () => {
@@ -98,6 +121,9 @@ describe('Auth Integration Tests', () => {
       expect(response.body.message).toBe('Login successful');
       expect(response.body.user).toBeDefined();
       expect(response.body.tokens).toBeDefined();
+      
+      // Add delay between tests
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
     it('should fail with wrong password', async () => {
@@ -110,6 +136,9 @@ describe('Auth Integration Tests', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.error).toBe('Invalid credentials');
+      
+      // Add delay between tests
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
     it('should fail with non-existent user', async () => {
@@ -137,7 +166,15 @@ describe('Auth Integration Tests', () => {
           name: 'Refresh Test User',
         });
 
-      refreshToken = response.body.tokens.refreshToken;
+      refreshToken = response.body.tokens?.refreshToken;
+      
+      if (!refreshToken) {
+        console.error('Registration response for refresh test:', response.body);
+        throw new Error(`Failed to get refresh token. Status: ${response.status}`);
+      }
+      
+      // Add delay to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     it('should refresh token successfully', async () => {

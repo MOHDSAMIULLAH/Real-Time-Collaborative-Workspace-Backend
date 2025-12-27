@@ -1,3 +1,6 @@
+// Set NODE_ENV before importing any application code
+process.env.NODE_ENV = 'test';
+
 import request from 'supertest';
 import { App } from '../../app';
 import { postgresDB } from '../../database/postgres';
@@ -13,6 +16,15 @@ describe('Project Integration Tests', () => {
     await app.connectDatabases();
     await app.runDatabaseMigrations();
     server = app.app;
+    
+    // Clean up any leftover test data from previous failed runs
+    try {
+      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    } catch (error) {
+      // Ignore cleanup errors on first run
+    }
 
     // Create a test user and get token
     const response = await request(server)
@@ -23,12 +35,26 @@ describe('Project Integration Tests', () => {
         name: 'Project Test User',
       });
 
-    accessToken = response.body.tokens.accessToken;
+    accessToken = response.body.tokens?.accessToken;
+    
+    if (!accessToken) {
+      console.error('Registration response:', response.body);
+      throw new Error(`Failed to get access token for tests. Status: ${response.status}`);
+    }
+
+    // Add delay to avoid rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 100));
   });
 
   afterAll(async () => {
-    // Clean up
-    await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    // Clean up in correct order to avoid foreign key violations
+    try {
+      await postgresDB.query('DELETE FROM project_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM projects WHERE owner_id IN (SELECT id FROM users WHERE email LIKE $1)', ['test%@example.com']);
+      await postgresDB.query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
     await app.close();
   });
 
@@ -48,6 +74,9 @@ describe('Project Integration Tests', () => {
       expect(response.body.project.name).toBe('Test Project');
 
       projectId = response.body.project.id;
+      
+      // Add delay to ensure project member is committed
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     it('should fail without authentication', async () => {
@@ -131,6 +160,8 @@ describe('Project Integration Tests', () => {
           password: 'TestPassword123!',
           name: 'Member Test User',
         });
+      // Add delay to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     it('should invite a member', async () => {

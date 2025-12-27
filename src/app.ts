@@ -50,13 +50,17 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
 
-    // Rate limiting
-    const limiter = rateLimit({
-      windowMs: config.rateLimit.windowMs,
-      max: config.rateLimit.max,
-      message: 'Too many requests from this IP, please try again later',
-    });
-    this.app.use('/api/', limiter);
+    // Rate limiting (disabled in test environment)
+    if (config.env !== 'test') {
+      const limiter = rateLimit({
+        windowMs: config.rateLimit.windowMs,
+        max: config.rateLimit.max,
+        message: 'Too many requests from this IP, please try again later',
+      });
+      this.app.use('/api/', limiter);
+    } else {
+      logger.info('Rate limiting disabled for test environment');
+    }
 
     // Request logging
     this.app.use((req, res, next) => {

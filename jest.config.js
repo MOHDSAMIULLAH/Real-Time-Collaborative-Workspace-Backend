@@ -6,6 +6,9 @@ module.exports = {
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
+  setupFiles: ['<rootDir>/jest.setup.js'],
+  maxWorkers: 1, // Run tests sequentially to avoid rate limiting
+  testTimeout: 30000, // 30 second timeout for slow tests
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.test.ts',
