@@ -94,6 +94,9 @@ services:
       BULL_REDIS_HOST: redis
       BULL_REDIS_PORT: 6379
       
+      # Worker
+      ENABLE_WORKER: "true"
+      
       # Feature Flags
       FEATURE_REAL_TIME_COLLABORATION: "true"
       FEATURE_CODE_EXECUTION: "true"

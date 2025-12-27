@@ -125,8 +125,23 @@ A production-grade, scalable backend service that powers real-time collaborative
    npm start
    ```
 
-6. **Start the background worker (in a separate terminal)**
+6. **Background Worker Configuration**
+   
+   **Option A: Integrated Worker (Recommended for production/single-instance)**
    ```bash
+   # Set in .env file
+   ENABLE_WORKER=true
+   
+   # The worker will run automatically with the web server
+   npm start
+   ```
+   
+   **Option B: Separate Worker Process (For development/multi-instance)**
+   ```bash
+   # Set in .env file
+   ENABLE_WORKER=false
+   
+   # Run worker in a separate terminal
    npm run worker
    ```
 
@@ -447,6 +462,10 @@ JWT_REFRESH_EXPIRES_IN=7d
 # CORS
 CORS_ORIGIN=https://your-frontend-domain.com
 
+# Worker Configuration
+# Set to 'true' to run worker in the same process (recommended for single-instance deployments)
+ENABLE_WORKER=true
+
 # Feature Flags
 FEATURE_REAL_TIME_COLLABORATION=true
 FEATURE_CODE_EXECUTION=true
@@ -466,6 +485,15 @@ kubectl apply -f k8s/
 ```
 
 #### 3. Cloud Platforms
+
+**Render** (Recommended for quick deployments)
+- Create a new Web Service
+- Connect your GitHub repository
+- Set build command: `npm run render-build`
+- Set start command: `npm start`
+- Add environment variable: `ENABLE_WORKER=true`
+- Add all other required environment variables
+- The worker will run in the same process as the web server
 
 **AWS**
 - Deploy containers to ECS/Fargate

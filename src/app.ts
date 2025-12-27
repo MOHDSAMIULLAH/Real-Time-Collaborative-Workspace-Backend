@@ -23,9 +23,13 @@ import { runMigrations } from './database/migrations/run-migrations';
 // WebSocket
 import { WebSocketServer } from './websocket/server';
 
+// Worker
+import { jobQueue } from './queue/job-queue';
+
 export class App {
   public app: Express;
   private wsServer?: WebSocketServer;
+  private workerStarted: boolean = false;
 
   constructor() {
     this.app = express();
@@ -136,6 +140,28 @@ export class App {
     }
   }
 
+  startWorker(): void {
+    if (process.env.ENABLE_WORKER !== 'true') {
+      logger.info('Worker disabled (ENABLE_WORKER !== true)');
+      return;
+    }
+
+    if (this.workerStarted) {
+      logger.warn('Worker already started, skipping...');
+      return;
+    }
+
+    logger.info('Starting job worker...');
+    const queue = jobQueue.getQueue();
+
+    queue.process(async (job) => {
+      return await jobQueue.processJob(job);
+    });
+
+    this.workerStarted = true;
+    logger.info('Job worker started and ready to process jobs');
+  }
+
   async start(): Promise<void> {
     try {
       // Connect to databases
@@ -146,6 +172,9 @@ export class App {
 
       // Start WebSocket server
       this.startWebSocketServer();
+
+      // Start Worker
+      this.startWorker();
 
       // Start HTTP server
       this.app.listen(config.port, () => {
@@ -164,6 +193,13 @@ export class App {
 
     if (this.wsServer) {
       this.wsServer.close();
+    }
+
+    // Close worker queue
+    if (this.workerStarted) {
+      const queue = jobQueue.getQueue();
+      await queue.close();
+      logger.info('Worker queue closed');
     }
 
     await postgresDB.close();
