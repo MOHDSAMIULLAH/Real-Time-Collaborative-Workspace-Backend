@@ -6,7 +6,7 @@ import { UserRole } from '../types/enums';
 import logger from '../utils/logger';
 
 export class WorkspaceController {
-  async createWorkspace(req: AuthRequest, res: Response): Promise<void> {
+  createWorkspace = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const { name, settings } = req.body;
@@ -29,9 +29,9 @@ export class WorkspaceController {
       logger.error('Error creating workspace', error);
       res.status(500).json({ error: 'Failed to create workspace' });
     }
-  }
+  };
 
-  async getWorkspaces(req: AuthRequest, res: Response): Promise<void> {
+  getWorkspaces = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const userId = req.user!.userId;
@@ -50,9 +50,9 @@ export class WorkspaceController {
       logger.error('Error fetching workspaces', error);
       res.status(500).json({ error: 'Failed to fetch workspaces' });
     }
-  }
+  };
 
-  async getWorkspace(req: AuthRequest, res: Response): Promise<void> {
+  getWorkspace = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { workspaceId } = req.params;
       const userId = req.user!.userId;
@@ -75,9 +75,9 @@ export class WorkspaceController {
       logger.error('Error fetching workspace', error);
       res.status(500).json({ error: 'Failed to fetch workspace' });
     }
-  }
+  };
 
-  async updateWorkspace(req: AuthRequest, res: Response): Promise<void> {
+  updateWorkspace = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { workspaceId } = req.params;
       const updates = req.body;
@@ -106,9 +106,9 @@ export class WorkspaceController {
       logger.error('Error updating workspace', error);
       res.status(500).json({ error: 'Failed to update workspace' });
     }
-  }
+  };
 
-  async deleteWorkspace(req: AuthRequest, res: Response): Promise<void> {
+  deleteWorkspace = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { workspaceId } = req.params;
       const userId = req.user!.userId;
@@ -133,7 +133,7 @@ export class WorkspaceController {
       logger.error('Error deleting workspace', error);
       res.status(500).json({ error: 'Failed to delete workspace' });
     }
-  }
+  };
 }
 
 export const workspaceController = new WorkspaceController();

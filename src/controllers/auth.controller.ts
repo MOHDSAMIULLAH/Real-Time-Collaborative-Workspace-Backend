@@ -4,7 +4,7 @@ import { userService } from '../services/user.service';
 import logger from '../utils/logger';
 
 export class AuthController {
-  async register(req: Request, res: Response): Promise<void> {
+  register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password, name } = req.body;
 
@@ -33,9 +33,9 @@ export class AuthController {
       logger.error('Registration error', error);
       res.status(500).json({ error: 'Registration failed' });
     }
-  }
+  };
 
-  async login(req: Request, res: Response): Promise<void> {
+  login = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
 
@@ -71,9 +71,9 @@ export class AuthController {
       logger.error('Login error', error);
       res.status(500).json({ error: 'Login failed' });
     }
-  }
+  };
 
-  async refreshToken(req: Request, res: Response): Promise<void> {
+  refreshToken = async (req: Request, res: Response): Promise<void> => {
     try {
       const { refreshToken } = req.body;
 
@@ -103,9 +103,9 @@ export class AuthController {
       logger.error('Token refresh error', error);
       res.status(401).json({ error: 'Invalid or expired refresh token' });
     }
-  }
+  };
 
-  async logout(req: Request, res: Response): Promise<void> {
+  logout = async (req: Request, res: Response): Promise<void> => {
     try {
       const { refreshToken } = req.body;
 
@@ -119,7 +119,7 @@ export class AuthController {
       logger.error('Logout error', error);
       res.status(500).json({ error: 'Logout failed' });
     }
-  }
+  };
 }
 
 export const authController = new AuthController();

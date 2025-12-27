@@ -43,7 +43,7 @@ router.use(authenticate);
 router.post(
   '/projects/:projectId/workspaces',
   validate(createWorkspaceSchema),
-  workspaceController.createWorkspace.bind(workspaceController)
+  workspaceController.createWorkspace
 );
 
 /**
@@ -64,7 +64,7 @@ router.post(
  *       200:
  *         description: List of workspaces
  */
-router.get('/projects/:projectId/workspaces', workspaceController.getWorkspaces.bind(workspaceController));
+router.get('/projects/:projectId/workspaces', workspaceController.getWorkspaces);
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ router.get('/projects/:projectId/workspaces', workspaceController.getWorkspaces.
  *       404:
  *         description: Workspace not found
  */
-router.get('/workspaces/:workspaceId', workspaceController.getWorkspace.bind(workspaceController));
+router.get('/workspaces/:workspaceId', workspaceController.getWorkspace);
 
 /**
  * @swagger
@@ -117,7 +117,7 @@ router.get('/workspaces/:workspaceId', workspaceController.getWorkspace.bind(wor
  *       200:
  *         description: Workspace updated successfully
  */
-router.put('/workspaces/:workspaceId', workspaceController.updateWorkspace.bind(workspaceController));
+router.put('/workspaces/:workspaceId', workspaceController.updateWorkspace);
 
 /**
  * @swagger
@@ -137,6 +137,6 @@ router.put('/workspaces/:workspaceId', workspaceController.updateWorkspace.bind(
  *       200:
  *         description: Workspace deleted successfully
  */
-router.delete('/workspaces/:workspaceId', workspaceController.deleteWorkspace.bind(workspaceController));
+router.delete('/workspaces/:workspaceId', workspaceController.deleteWorkspace);
 
 export default router;

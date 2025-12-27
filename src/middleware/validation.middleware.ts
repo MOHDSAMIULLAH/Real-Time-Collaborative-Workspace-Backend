@@ -1,28 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
+import { z, ZodError } from 'zod';
 import logger from '../utils/logger';
 
-export const validate = (schema: Joi.ObjectSchema) => {
+export const validate = (schema: z.ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const { error } = schema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
+    try {
+      schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = error.issues.map((issue) => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        }));
 
-    if (error) {
-      const errors = error.details.map((detail) => ({
-        field: detail.path.join('.'),
-        message: detail.message,
-      }));
+        logger.warn('Validation error', { errors });
+        res.status(400).json({
+          error: 'Validation failed',
+          details: errors,
+        });
+        return;
+      }
 
-      logger.warn('Validation error', { errors });
-      res.status(400).json({
-        error: 'Validation failed',
-        details: errors,
+      // Handle unexpected errors
+      logger.error('Unexpected validation error', { error });
+      res.status(500).json({
+        error: 'Internal server error',
       });
-      return;
     }
-
-    next();
   };
 };

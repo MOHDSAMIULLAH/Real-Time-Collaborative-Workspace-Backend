@@ -4,7 +4,7 @@ import { jobQueue } from '../queue/job-queue';
 import logger from '../utils/logger';
 
 export class JobController {
-  async createJob(req: AuthRequest, res: Response): Promise<void> {
+  createJob = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { type, payload } = req.body;
 
@@ -18,9 +18,9 @@ export class JobController {
       logger.error('Error creating job', error);
       res.status(500).json({ error: 'Failed to create job' });
     }
-  }
+  };
 
-  async getJob(req: AuthRequest, res: Response): Promise<void> {
+  getJob = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { jobId } = req.params;
 
@@ -47,9 +47,9 @@ export class JobController {
       logger.error('Error fetching job', error);
       res.status(500).json({ error: 'Failed to fetch job' });
     }
-  }
+  };
 
-  async getJobs(req: AuthRequest, res: Response): Promise<void> {
+  getJobs = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { status } = req.query;
 
@@ -69,7 +69,7 @@ export class JobController {
       logger.error('Error fetching jobs', error);
       res.status(500).json({ error: 'Failed to fetch jobs' });
     }
-  }
+  };
 }
 
 export const jobController = new JobController();

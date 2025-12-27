@@ -1,46 +1,46 @@
-import Joi from 'joi';
+import { z } from 'zod';
 
-export const registerSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().min(8).required(),
-  name: Joi.string().min(2).max(100).required(),
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(2).max(100),
 });
 
-export const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
 });
 
-export const refreshTokenSchema = Joi.object({
-  refreshToken: Joi.string().required(),
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string(),
 });
 
-export const createProjectSchema = Joi.object({
-  name: Joi.string().min(3).max(100).required(),
-  description: Joi.string().max(500).optional(),
+export const createProjectSchema = z.object({
+  name: z.string().min(3).max(100),
+  description: z.string().max(500).optional(),
 });
 
-export const updateProjectSchema = Joi.object({
-  name: Joi.string().min(3).max(100).optional(),
-  description: Joi.string().max(500).optional(),
-  status: Joi.string().valid('active', 'archived', 'deleted').optional(),
+export const updateProjectSchema = z.object({
+  name: z.string().min(3).max(100).optional(),
+  description: z.string().max(500).optional(),
+  status: z.enum(['active', 'archived', 'deleted']).optional(),
 });
 
-export const createWorkspaceSchema = Joi.object({
-  name: Joi.string().min(3).max(100).required(),
-  settings: Joi.object().optional(),
+export const createWorkspaceSchema = z.object({
+  name: z.string().min(3).max(100),
+  settings: z.record(z.string(), z.unknown()).optional(),
 });
 
-export const inviteMemberSchema = Joi.object({
-  email: Joi.string().email().required(),
-  role: Joi.string().valid('owner', 'collaborator', 'viewer').required(),
+export const inviteMemberSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(['owner', 'collaborator', 'viewer']),
 });
 
-export const updateMemberRoleSchema = Joi.object({
-  role: Joi.string().valid('owner', 'collaborator', 'viewer').required(),
+export const updateMemberRoleSchema = z.object({
+  role: z.enum(['owner', 'collaborator', 'viewer']),
 });
 
-export const createJobSchema = Joi.object({
-  type: Joi.string().required(),
-  payload: Joi.object().required(),
+export const createJobSchema = z.object({
+  type: z.string(),
+  payload: z.record(z.string(), z.unknown()),
 });

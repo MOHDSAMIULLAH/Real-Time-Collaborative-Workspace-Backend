@@ -45,7 +45,7 @@ const authLimiter = config.env === 'test'
  *       400:
  *         description: Invalid input or email already exists
  */
-router.post('/register', authLimiter, validate(registerSchema), authController.register.bind(authController));
+router.post('/register', authLimiter, validate(registerSchema), authController.register);
 
 /**
  * @swagger
@@ -73,7 +73,7 @@ router.post('/register', authLimiter, validate(registerSchema), authController.r
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', authLimiter, validate(loginSchema), authController.login.bind(authController));
+router.post('/login', authLimiter, validate(loginSchema), authController.login);
 
 /**
  * @swagger
@@ -98,7 +98,7 @@ router.post('/login', authLimiter, validate(loginSchema), authController.login.b
  *       401:
  *         description: Invalid refresh token
  */
-router.post('/refresh', validate(refreshTokenSchema), authController.refreshToken.bind(authController));
+router.post('/refresh', validate(refreshTokenSchema), authController.refreshToken);
 
 /**
  * @swagger
@@ -119,6 +119,6 @@ router.post('/refresh', validate(refreshTokenSchema), authController.refreshToke
  *       200:
  *         description: Logout successful
  */
-router.post('/logout', authController.logout.bind(authController));
+router.post('/logout', authController.logout);
 
 export default router;

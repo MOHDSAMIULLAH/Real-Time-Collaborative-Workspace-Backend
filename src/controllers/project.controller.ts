@@ -5,7 +5,7 @@ import { UserRole } from '../types/enums';
 import logger from '../utils/logger';
 
 export class ProjectController {
-  async createProject(req: AuthRequest, res: Response): Promise<void> {
+  createProject = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { name, description } = req.body;
       const userId = req.user!.userId;
@@ -20,9 +20,9 @@ export class ProjectController {
       logger.error('Error creating project', error);
       res.status(500).json({ error: 'Failed to create project' });
     }
-  }
+  };
 
-  async getProjects(req: AuthRequest, res: Response): Promise<void> {
+  getProjects = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user!.userId;
       const projects = await projectService.getUserProjects(userId);
@@ -32,9 +32,9 @@ export class ProjectController {
       logger.error('Error fetching projects', error);
       res.status(500).json({ error: 'Failed to fetch projects' });
     }
-  }
+  };
 
-  async getProject(req: AuthRequest, res: Response): Promise<void> {
+  getProject = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const userId = req.user!.userId;
@@ -57,9 +57,9 @@ export class ProjectController {
       logger.error('Error fetching project', error);
       res.status(500).json({ error: 'Failed to fetch project' });
     }
-  }
+  };
 
-  async updateProject(req: AuthRequest, res: Response): Promise<void> {
+  updateProject = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const userId = req.user!.userId;
@@ -82,9 +82,9 @@ export class ProjectController {
       logger.error('Error updating project', error);
       res.status(500).json({ error: 'Failed to update project' });
     }
-  }
+  };
 
-  async deleteProject(req: AuthRequest, res: Response): Promise<void> {
+  deleteProject = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const userId = req.user!.userId;
@@ -103,9 +103,9 @@ export class ProjectController {
       logger.error('Error deleting project', error);
       res.status(500).json({ error: 'Failed to delete project' });
     }
-  }
+  };
 
-  async getMembers(req: AuthRequest, res: Response): Promise<void> {
+  getMembers = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const userId = req.user!.userId;
@@ -124,9 +124,9 @@ export class ProjectController {
       logger.error('Error fetching members', error);
       res.status(500).json({ error: 'Failed to fetch members' });
     }
-  }
+  };
 
-  async inviteMember(req: AuthRequest, res: Response): Promise<void> {
+  inviteMember = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId } = req.params;
       const { email, role } = req.body;
@@ -153,9 +153,9 @@ export class ProjectController {
         res.status(500).json({ error: 'Failed to invite member' });
       }
     }
-  }
+  };
 
-  async updateMemberRole(req: AuthRequest, res: Response): Promise<void> {
+  updateMemberRole = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId, memberId } = req.params;
       const { role } = req.body;
@@ -175,9 +175,9 @@ export class ProjectController {
       logger.error('Error updating member role', error);
       res.status(500).json({ error: 'Failed to update member role' });
     }
-  }
+  };
 
-  async removeMember(req: AuthRequest, res: Response): Promise<void> {
+  removeMember = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { projectId, memberId } = req.params;
       const userId = req.user!.userId;
@@ -196,7 +196,7 @@ export class ProjectController {
       logger.error('Error removing member', error);
       res.status(500).json({ error: 'Failed to remove member' });
     }
-  }
+  };
 }
 
 export const projectController = new ProjectController();

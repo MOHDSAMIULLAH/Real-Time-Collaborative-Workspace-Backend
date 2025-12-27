@@ -41,7 +41,7 @@ router.use(authenticate);
  *       401:
  *         description: Unauthorized
  */
-router.post('/', validate(createProjectSchema), projectController.createProject.bind(projectController));
+router.post('/', validate(createProjectSchema), projectController.createProject);
 
 /**
  * @swagger
@@ -57,7 +57,7 @@ router.post('/', validate(createProjectSchema), projectController.createProject.
  *       401:
  *         description: Unauthorized
  */
-router.get('/', projectController.getProjects.bind(projectController));
+router.get('/', projectController.getProjects);
 
 /**
  * @swagger
@@ -79,7 +79,7 @@ router.get('/', projectController.getProjects.bind(projectController));
  *       404:
  *         description: Project not found
  */
-router.get('/:projectId', projectController.getProject.bind(projectController));
+router.get('/:projectId', projectController.getProject);
 
 /**
  * @swagger
@@ -115,7 +115,7 @@ router.get('/:projectId', projectController.getProject.bind(projectController));
 router.put(
   '/:projectId',
   validate(updateProjectSchema),
-  projectController.updateProject.bind(projectController)
+  projectController.updateProject
 );
 
 /**
@@ -136,20 +136,20 @@ router.put(
  *       200:
  *         description: Project deleted successfully
  */
-router.delete('/:projectId', projectController.deleteProject.bind(projectController));
+router.delete('/:projectId', projectController.deleteProject);
 
 // Project members routes
-router.get('/:projectId/members', projectController.getMembers.bind(projectController));
+router.get('/:projectId/members', projectController.getMembers);
 router.post(
   '/:projectId/members',
   validate(inviteMemberSchema),
-  projectController.inviteMember.bind(projectController)
+  projectController.inviteMember
 );
 router.put(
   '/:projectId/members/:memberId',
   validate(updateMemberRoleSchema),
-  projectController.updateMemberRole.bind(projectController)
+  projectController.updateMemberRole
 );
-router.delete('/:projectId/members/:memberId', projectController.removeMember.bind(projectController));
+router.delete('/:projectId/members/:memberId', projectController.removeMember);
 
 export default router;

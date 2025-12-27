@@ -38,7 +38,7 @@ router.use(authenticate);
  *       401:
  *         description: Unauthorized
  */
-router.post('/', validate(createJobSchema), jobController.createJob.bind(jobController));
+router.post('/', validate(createJobSchema), jobController.createJob);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.post('/', validate(createJobSchema), jobController.createJob.bind(jobCont
  *       404:
  *         description: Job not found
  */
-router.get('/:jobId', jobController.getJob.bind(jobController));
+router.get('/:jobId', jobController.getJob);
 
 /**
  * @swagger
@@ -80,6 +80,6 @@ router.get('/:jobId', jobController.getJob.bind(jobController));
  *       200:
  *         description: List of jobs
  */
-router.get('/', jobController.getJobs.bind(jobController));
+router.get('/', jobController.getJobs);
 
 export default router;
